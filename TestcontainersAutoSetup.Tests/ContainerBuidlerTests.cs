@@ -9,10 +9,14 @@ namespace TestcontainersAutoSetup.Tests;
 
 public class ContainerBuidlerTests
 {
+    // Feel free to change this variable to your own docker endpoint
+    private const string wslDockerEndpoint = "tcp://localhost:2375";
+    private readonly string? dockerEndpoint = CheckIfCiRun() ? null! : wslDockerEndpoint;
+
     [Fact]
     public async Task ContainerBuilder_CreatesMySqlContainer()
     {
-        var builder = new AutoSetupContainerBuilder(dockerEndpoint: "tcp://localhost:2375");
+        var builder = new AutoSetupContainerBuilder(dockerEndpoint!);
         var mySqlContainer = await builder.CreateMySqlContainer()
             .WithDatabase("TestDb")
             .BuildAndInitializeAsync();
@@ -25,7 +29,7 @@ public class ContainerBuidlerTests
     [Fact]
     public async Task ContainerBuilder_CreatesSqlServerContainers()
     {
-        var builder = new AutoSetupContainerBuilder(dockerEndpoint: "tcp://localhost:2375");
+        var builder = new AutoSetupContainerBuilder(dockerEndpoint!);
         var sqlServerContainer = await builder.CreateSqlServerContainer()
             // .WithDatabase("TestDb")
             .BuildAndInitializeAsync();
@@ -38,7 +42,7 @@ public class ContainerBuidlerTests
     [Fact]
     public async Task ContainerBuilder_CreatesBothSqlServerAndMySqlContainers()
     {
-        var builder = new AutoSetupContainerBuilder(dockerEndpoint: "tcp://localhost:2375");
+        var builder = new AutoSetupContainerBuilder(dockerEndpoint!);
         var containers = await builder.CreateMySqlContainer()
             .WithDatabase("TestDb")
             .And()
@@ -55,5 +59,16 @@ public class ContainerBuidlerTests
         await Task.Delay(10_000);
         Assert.NotEqual(default, sqlServerContainer.CreatedTime);
         Assert.Equal(TestcontainersStates.Running, sqlServerContainer.State);
+    }
+
+    private static bool CheckIfCiRun()
+    {
+        bool.TryParse(Environment.GetEnvironmentVariable("CI"), out bool env);
+        if(env)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

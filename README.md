@@ -1,3 +1,5 @@
+[![CI](https://github.com/DenysMalanichev/TestcontaienrsAutoSetup/actions/workflows/ci.yml/badge.svg)](https://github.com/DenysMalanichev/TestcontaienrsAutoSetup/actions/workflows/ci.yml)
+
 # TestcontaienrsAutoSetup
 
 ## Docker under WSL
